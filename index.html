@@ -1,0 +1,70 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scenic Roots – Quoter Contractor Pro</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#1e7f4b">
+<style>
+body{font-family:system-ui,Arial}section{border:1px solid #ccc;margin:8px;padding:8px;border-radius:8px}
+.badge{background:#e8f5ee;color:#1e7f4b;padding:4px 8px;border-radius:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Scenic Roots – Contractor Pro <span class="badge">Phase 2</span></h1>
+  <button onclick="window.print()">Print / PDF</button>
+</header>
+
+<section>
+  <h2>Profit Analyzer</h2>
+  <div id="profitBox">Margin: --%</div>
+</section>
+
+<section>
+  <h2>Crew Templates</h2>
+  <div id="crewBtns"></div>
+</section>
+
+<section>
+  <h2>Equipment Rentals</h2>
+  <div id="equipBtns"></div>
+</section>
+
+<section>
+  <h2>Material Catalog</h2>
+  <div id="catalog"></div>
+</section>
+
+<script>
+const catalog = [{"name": "Lawn Mowing (up to \u00bc acre)", "unit": "job", "uc": 45, "tax": true}, {"name": "Lawn Mowing (\u00bd acre)", "unit": "job", "uc": 65, "tax": true}, {"name": "Lawn Mowing (\u00bd \u2013 1 acre)", "unit": "job", "uc": 100, "tax": true}, {"name": "Edging/Trimming Only", "unit": "job", "uc": 25, "tax": true}, {"name": "Grass Seeding", "unit": "1000 sqft", "uc": 100, "tax": true}, {"name": "Fertilizing", "unit": "application", "uc": 85, "tax": true}, {"name": "Mulch Installation (with barrier)", "unit": "yard", "uc": 125, "tax": true}, {"name": "Mulch Only (spread)", "unit": "yard", "uc": 85, "tax": true}, {"name": "Flower Bed Clean-Up & Prep", "unit": "job", "uc": 120, "tax": true}, {"name": "New Flower Bed Install", "unit": "job", "uc": 600, "tax": true}, {"name": "Rock Installation (decorative)", "unit": "ton", "uc": 200, "tax": true}, {"name": "Hedge Trimming", "unit": "10 ft", "uc": 75, "tax": true}, {"name": "Small Tree Trimming (<12 ft)", "unit": "tree", "uc": 175, "tax": true}, {"name": "Tree/Brush Removal", "unit": "job", "uc": 350, "tax": true}, {"name": "Spring/Fall Yard Cleanup", "unit": "job", "uc": 450, "tax": true}, {"name": "Gutter Cleaning (1-story)", "unit": "job", "uc": 135, "tax": true}, {"name": "Pressure Washing", "unit": "sqft", "uc": 0.5, "tax": true}, {"name": "Landscape Design Plan (basic)", "unit": "job", "uc": 175, "tax": true}, {"name": "Weed Barrier Replacement", "unit": "sqft", "uc": 1.25, "tax": true}, {"name": "Planting (flowers/perennials)", "unit": "plant", "uc": 14, "tax": true}, {"name": "Haul-Off/Debris Disposal", "unit": "load", "uc": 95, "tax": false}];
+const crewTemplates = [{"name": "3-Man Crew (Lead+2)", "rate": 55}, {"name": "4-Man Crew", "rate": 70}, {"name": "2-Man Crew", "rate": 40}];
+const equipmentRentals = [{"name": "Mini-Excavator Rental", "unit": "day", "uc": 300, "tax": false}, {"name": "Dump Trailer Rental", "unit": "day", "uc": 120, "tax": false}, {"name": "Skid Steer Rental", "unit": "day", "uc": 250, "tax": false}];
+
+function renderCatalog(){
+  const box=document.getElementById('catalog'); box.innerHTML='';
+  catalog.forEach(item=>{
+    const div=document.createElement('div');
+    div.textContent=`${item.name} – $${item.uc}/${item.unit}`;
+    box.appendChild(div);
+  });
+}
+function renderCrew(){
+  const box=document.getElementById('crewBtns'); box.innerHTML='';
+  crewTemplates.forEach(t=>{
+    const b=document.createElement('button'); b.textContent=t.name+" ($"+t.rate+"/hr)";
+    b.onclick=()=>alert("Applied crew: "+t.name);
+    box.appendChild(b);
+  });
+}
+function renderEquip(){
+  const box=document.getElementById('equipBtns'); box.innerHTML='';
+  equipmentRentals.forEach(t=>{
+    const b=document.createElement('button'); b.textContent=t.name+" ($"+t.uc+"/"+t.unit+")";
+    b.onclick=()=>alert("Added rental: "+t.name);
+    box.appendChild(b);
+  });
+}
+function renderProfit(){
+  document.getElementById('profitBox').textContent="Margin: 25% (example)";
+}
+renderCatalog(); renderCrew(); renderEquip(); renderProfit();
+</script>
+</body></html>
