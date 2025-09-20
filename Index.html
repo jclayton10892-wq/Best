@@ -1,0 +1,408 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scenic Roots – Quoter Stage 3</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#1e7f4b">
+<style>
+:root{--b:#1e7f4b;--g:#e5e7eb;--m:#6b7280;--txt:#111}
+*{box-sizing:border-box}body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;color:var(--txt)}
+header{position:sticky;top:0;z-index:3;background:#fff;border-bottom:1px solid var(--g);padding:8px 12px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+h1,h2,h3{margin:0 0 8px 0}
+button{background:var(--b);color:#fff;border:0;border-radius:8px;padding:8px 12px;font-weight:600;cursor:pointer}
+button.ghost{background:#fff;color:#111;border:1px solid var(--g)}
+main{display:grid;grid-template-columns:420px 1fr;gap:12px;padding:12px}@media(max-width:1100px){main{grid-template-columns:1fr}}
+section{border:1px solid var(--g);border-radius:12px;overflow:hidden;background:#fff}
+section>h3{background:#f6f9f7;padding:8px 10px;border-bottom:1px solid var(--g)}
+.pad{padding:10px}label{font-size:12px;color:var(--m)}input,select,textarea{width:100%;padding:8px;border:1px solid var(--g);border-radius:8px;margin-top:3px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tiny{font-size:12px;color:var(--m)}
+table{width:100%;border-collapse:collapse}th,td{padding:6px;border-bottom:1px solid var(--g);font-size:14px}th{background:#f6f9f7}
+.right{text-align:right}
+.badge{font-size:12px;color:#1e7f4b;background:#e8f5ee;border-radius:999px;padding:4px 8px}
+#proposal{max-width:980px;margin:0 auto;display:none;padding:16px}
+#proposal .line{display:flex;justify-content:space-between;border-bottom:1px dashed var(--g);padding:6px 0}
+.option-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.card{border:1px solid var(--g);border-radius:12px;padding:10px}
+#annotator{border:1px dashed var(--g);border-radius:8px;max-width:100%;display:block}
+.brandRow{display:flex;gap:8px;align-items:center}
+.colorDot{width:18px;height:18px;border-radius:50%;border:1px solid #cbd5e1;display:inline-block;vertical-align:middle}
+</style>
+<script>if('serviceWorker'in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js'))}</script>
+</head>
+<body>
+<header>
+  <div class="brandRow">
+    <img id="brandLogo" alt="Logo" style="height:32px;display:none">
+    <strong>Scenic Roots – Quoter <span class="badge">Stage 3</span></strong>
+  </div>
+  <div class="actions" style="display:flex;gap:6px;flex-wrap:wrap">
+    <button id="toggleProposal" class="ghost">Client Proposal</button>
+    <button id="saveLocal" class="ghost">Save</button>
+    <button onclick="window.print()" class="ghost">Print / PDF</button>
+  </div>
+</header>
+
+<main>
+  <section><h3>Branding & Settings</h3><div class="pad">
+    <div class="row">
+      <div><label>Business</label><input id="bizName" value="Scenic Roots Lawn Care & Landscaping"></div>
+      <div><label>Prepared By</label><input id="preparedBy" value="Jay"></div>
+    </div>
+    <div class="row">
+      <div><label>Phone</label><input id="phone" value="615-308-8477"></div>
+      <div><label>Email</label><input id="email" value="info@scenicroots.net"></div>
+    </div>
+    <div class="row">
+      <div><label>Website</label><input id="website" value="scenicroots.net"></div>
+      <div><label>Primary Color</label><input id="primaryColor" type="color" value="#1e7f4b"></div>
+    </div>
+    <div class="row">
+      <div><label>Upload Logo (PNG/JPG)</label><input id="logoInput" type="file" accept="image/*"></div>
+      <div><label>Payment URL (for QR)</label><input id="payUrl" placeholder="https://pay.link/your-checkout"></div>
+    </div>
+    <div class="row">
+      <div><label>Blended Crew Rate $/hr</label><input id="blended" type="number" step="0.01" value="55"></div>
+      <div><label>Target Profit %</label><input id="targetProfit" type="number" step="0.1" value="25"></div>
+    </div>
+    <div class="row">
+      <div><label>Overhead %</label><input id="overhead" type="number" step="0.1" value="10"></div>
+      <div><label>Sales Tax %</label><input id="taxRate" type="number" step="0.1" value="0"></div>
+    </div>
+    <div class="row">
+      <div><label>Tax Base</label><select id="taxBase"><option>Final</option><option>Materials Only</option><option>Materials + Labor</option></select></div>
+      <div>
+        <label>Rate Plan</label>
+        <select id="ratePlan">
+          <option value="one_time" selected>One-Time Job (0%)</option>
+          <option value="recurring">Recurring Customer (10%)</option>
+          <option value="existing_customer">Existing Customer (15%)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div><label>Override Discount ($ or %)</label><input id="discount" placeholder="e.g. 50 or 10%"><div class="tiny">Typing here overrides the rate plan.</div></div>
+      <div style="display:flex;gap:8px;align-items:center"><span class="colorDot" id="colorDot"></span><span class="tiny">Live theme preview</span></div>
+    </div>
+  </div></section>
+
+  <section><h3>Client & Job</h3><div class="pad">
+    <div class="row"><div><label>Client</label><input id="client"></div><div><label>Address</label><input id="address"></div></div>
+    <div class="row"><div><label>Job Name</label><input id="jobName"></div><div><label>Date</label><input id="jobDate" type="date"></div></div>
+    <div class="row"><div><label>Deposit ($ or %)</label><input id="deposit" placeholder="e.g. 200 or 25%"></div><div><label>Notes (mic to dictate)</label><div style="display:flex;gap:6px"><textarea id="notes" rows="3" placeholder="Internal note"></textarea><button id="startDictate" class="ghost">🎤</button></div></div></div>
+  </div></section>
+
+  <section><h3>Lines</h3><div class="pad">
+    <div style="margin:6px 0">
+      <button id="addLine" class="ghost">Add Blank Line</button>
+      <button id="clearLines" class="ghost">Clear Lines</button>
+    </div>
+    <table id="lines">
+      <thead><tr>
+        <th>#</th><th>Description</th><th>Unit</th><th class="right">Qty</th><th class="right">Unit Cost</th>
+        <th class="right">Crew Hrs</th><th class="right">Rate $/hr</th><th class="right">Equip $</th>
+        <th class="right">Taxable?</th><th class="right">Line Total</th><th></th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div></section>
+
+  <section><h3>Material Catalog (Quick Add)</h3><div class="pad">
+    <div class="tiny" style="margin-bottom:6px">Tap an item to add it as a line. Edit prices anytime below (saves locally).</div>
+    <div id="catalog" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px"></div>
+    <details style="margin-top:8px"><summary>Edit Catalog JSON</summary>
+      <textarea id="catalogJson" rows="10" style="width:100%;font-family:ui-monospace,Consolas,monospace"></textarea>
+      <div style="margin-top:6px;display:flex;gap:8px">
+        <button id="saveCatalog" class="ghost">Save Catalog</button>
+        <button id="resetCatalog" class="ghost">Reset to Defaults</button>
+      </div>
+    </details>
+  </div></section>
+
+  <section><h3>Calculators</h3><div class="pad">
+    <div class="row">
+      <div><label>Area (sq ft)</label><input id="area" type="number" step="0.01"></div>
+      <div><label>Depth (inches)</label><input id="depth" type="number" step="0.1"></div>
+    </div>
+    <div class="row">
+      <div><label>Mulch/Soil (yards)</label><input id="yards" readonly></div>
+      <div><label>Rock (tons)</label><input id="tons" readonly></div>
+    </div>
+    <button id="addCalcLine" class="ghost">Add Calc As Line</button>
+  </div></section>
+
+  <section><h3>Photos & Annotations</h3><div class="pad">
+    <div class="row">
+      <div><label>Upload Photos</label><input id="photos" type="file" accept="image/*" multiple><div id="thumbs" style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"></div></div>
+      <div>
+        <label>Annotate (draw)</label>
+        <canvas id="annotator" width="800" height="450"></canvas>
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <button id="annoClear" class="ghost">Clear</button>
+          <button id="annoUse" class="ghost">Add Annotated to Photos</button>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <section><h3>Client Options & Payment</h3><div class="pad">
+    <div class="option-cards">
+      <div class="card"><h4>Basic</h4><div id="optBasic">$0.00</div><button class="ghost" data-opt="Basic" onclick="chooseOption('Basic')">Select Basic</button></div>
+      <div class="card"><h4>Target</h4><div id="optTarget">$0.00</div><button class="ghost" data-opt="Target" onclick="chooseOption('Target')">Select Target</button></div>
+      <div class="card"><h4>Premium</h4><div id="optPremium">$0.00</div><button class="ghost" data-opt="Premium" onclick="chooseOption('Premium')">Select Premium</button></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <div><label>Basic % of base</label><input id="pctBasic" type="number" step="1" value="90"></div>
+      <div><label>Target % of base</label><input id="pctTarget" type="number" step="1" value="100"></div>
+    </div>
+    <div class="row">
+      <div><label>Premium % of base</label><input id="pctPremium" type="number" step="1" value="120"></div>
+      <div>
+        <label>Payment QR (shows in proposal)</label>
+        <button id="makeQR" class="ghost">Generate QR</button>
+      </div>
+    </div>
+    <canvas id="qrCanvas" width="180" height="180" style="border:1px solid var(--g);border-radius:8px;margin-top:6px"></canvas>
+  </div></section>
+</main>
+
+<div id="proposal">
+  <h1>Client Proposal</h1>
+  <div class="line"><strong>Client</strong><span id="pClient"></span></div>
+  <div class="line"><strong>Property</strong><span id="pAddr"></span></div>
+  <div class="line"><strong>Job</strong><span id="pJob"></span></div>
+  <div class="line"><strong>Date</strong><span id="pDate"></span></div>
+  <div class="line"><strong>Contact</strong><span id="pContact"></span></div>
+  <div class="line"><strong>Selected Option</strong><span id="pOption"></span></div>
+
+  <h2>Investment</h2>
+  <div id="investment"></div>
+
+  <h2>Payment</h2>
+  <div class="row"><div><div class="tiny">Scan to pay deposit</div><canvas id="pQR" width="180" height="180" style="border:1px solid var(--g);border-radius:8px"></canvas></div></div>
+
+  <h2>Photos</h2>
+  <div id="pPhotos" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px"></div>
+
+  <h2>Terms</h2>
+  <div id="pTerms">50% deposit to schedule; balance due upon completion. Proposal valid 15 days.</div>
+
+  <h2>Client Signature</h2>
+  <canvas id="sigPad" width="800" height="160" style="border:1px dashed var(--g);border-radius:8px"></canvas><br>
+  <button id="clearSig" class="ghost">Clear</button>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+const money=n=> (isNaN(n)?0:n).toLocaleString(undefined,{style:'currency',currency:'USD'});
+
+// Theme
+$('#primaryColor').addEventListener('input', e=>{ document.documentElement.style.setProperty('--b', e.target.value); $('#colorDot').style.background=e.target.value; });
+// Logo
+$('#logoInput').addEventListener('change', async e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{ $('#brandLogo').src=ev.target.result; $('#brandLogo').style.display='block'; }; r.readAsDataURL(f); });
+
+// Rate plan
+function setPlanDiscount(){
+  const plan=$('#ratePlan').value;
+  if(plan==='existing_customer') $('#discount').value='15%';
+  else if(plan==='recurring') $('#discount').value='10%';
+  else $('#discount').value='';
+  calc();
+}
+$('#ratePlan').addEventListener('change', setPlanDiscount);
+
+// Lines
+function addLine(d={}){
+  const tb=$('#lines tbody'); const i=tb.children.length+1;
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+  <td>${i}</td>
+  <td><input class="desc" value="${d.desc||''}"></td>
+  <td><input class="unit" value="${d.unit||''}" style="width:70px"></td>
+  <td class="right"><input class="qty" type="number" step="0.01" value="${d.qty??0}"></td>
+  <td class="right"><input class="uc" type="number" step="0.01" value="${d.uc??0}"></td>
+  <td class="right"><input class="hrs" type="number" step="0.01" value="${d.hrs??0}"></td>
+  <td class="right"><input class="rate" type="number" step="0.01" value="${d.rate??($('#blended').value||55)}"></td>
+  <td class="right"><input class="eq" type="number" step="0.01" value="${d.eq??0}"></td>
+  <td class="right"><input class="tax" type="checkbox" ${(d.tax??true)?'checked':''}></td>
+  <td class="right"><span class="lt">$0.00</span></td>
+  <td><button class="ghost del">✕</button></td>`;
+  tb.appendChild(tr);
+  tr.querySelector('.del').onclick=()=>{tr.remove(); renumber(); calc();};
+  tr.addEventListener('input', calc);
+  calc();
+}
+function renumber(){[...$('#lines tbody').children].forEach((tr,i)=>tr.children[0].textContent=i+1)}
+function parsePctOr$(v,base){v=(v||'').toString().trim(); if(!v) return 0; return v.endsWith('%')? (parseFloat(v)/100*base) : parseFloat(v);}
+
+function calc(){
+  const rateBlended=+$('#blended').value||0, taxRate=(+$('#taxRate').value||0)/100;
+  let mat=0, lab=0, eq=0;
+  [...$('#lines tbody').children].forEach(tr=>{
+    const qty=+tr.querySelector('.qty').value||0, uc=+tr.querySelector('.uc').value||0;
+    const hrs=+tr.querySelector('.hrs').value||0, rate=+tr.querySelector('.rate').value||rateBlended;
+    const eq$=+tr.querySelector('.eq').value||0;
+    const lt = qty*uc + hrs*rate + eq$;
+    tr.querySelector('.lt').textContent=money(lt);
+    mat += qty*uc; lab += hrs*rate; eq += eq$;
+  });
+  const overhead = (+$('#overhead').value||0)/100 * (mat+lab);
+  const subtotal = mat+lab+eq + overhead;
+  const profit = ((+$('#targetProfit').value||0)/100) * subtotal;
+  let finalBefore = subtotal + profit;
+
+  let discountRaw = $('#discount').value.trim();
+  if(!discountRaw) discountRaw = ($('#ratePlan').value==='existing_customer')? '15%' : ($('#ratePlan').value==='recurring'? '10%' : '');
+  const disc = parsePctOr$(discountRaw, finalBefore);
+  finalBefore = Math.max(0, finalBefore - (isNaN(disc)?0:disc));
+
+  let taxBase=finalBefore;
+  const mode=$('#taxBase').value;
+  if(mode==='Materials Only') taxBase = mat;
+  if(mode==='Materials + Labor') taxBase = mat+lab;
+  const tax = taxBase * taxRate;
+  const totalDue = finalBefore + tax;
+
+  const dep = parsePctOr$($('#deposit').value, totalDue);
+
+  // Option tiers
+  const b = +$('#pctBasic').value/100 * totalDue;
+  const t = +$('#pctTarget').value/100 * totalDue;
+  const p = +$('#pctPremium').value/100 * totalDue;
+  $('#optBasic').textContent = money(b);
+  $('#optTarget').textContent = money(t);
+  $('#optPremium').textContent = money(p);
+
+  const inv=$('#investment'); inv.innerHTML='';
+  const add=(k,v,em)=>{const d=document.createElement('div'); d.className='line'; d.innerHTML=`${em?'<strong>':''}<span>${k}</span><span>${money(v)}</span>${em?'</strong>':''}`; inv.appendChild(d);};
+  add('Estimated Investment', finalBefore, false);
+  add('Sales Tax', tax, false);
+  add('Total Due (Target)', t, true);
+  add('Deposit', dep, false);
+  add('Balance After Deposit', Math.max(0, t-(isNaN(dep)?0:dep)), true);
+}
+
+$('#addLine').onclick=()=>addLine();
+$('#clearLines').onclick=()=>{ $('#lines tbody').innerHTML=''; addLine(); calc(); };
+
+// Calculators
+function updateCalcs(){
+  const area=+$('#area').value||0, depth=+$('#depth').value||0;
+  const yards = area*(depth/12)/27; const tons = yards*1.3;
+  $('#yards').value = yards.toFixed(2); $('#tons').value = tons.toFixed(2);
+}
+$('#area').addEventListener('input', updateCalcs); $('#depth').addEventListener('input', updateCalcs);
+$('#addCalcLine').onclick=()=>{ addLine({desc:`Area ${$('#area').value} sqft @ ${$('#depth').value}"`, unit:'yard', qty:+$('#yards').value||0, uc:80, hrs:0.25, rate:+$('#blended').value||55, tax:true}); };
+
+// Catalog (your profitable list baked in)
+const DEFAULT_CATALOG = [
+  {"name":"Lawn Mowing (up to ¼ acre)","unit":"job","uc":45,"tax":true},
+  {"name":"Lawn Mowing (½ acre)","unit":"job","uc":65,"tax":true},
+  {"name":"Lawn Mowing (½ – 1 acre)","unit":"job","uc":100,"tax":true},
+  {"name":"Edging/Trimming Only","unit":"job","uc":25,"tax":true},
+  {"name":"Grass Seeding","unit":"1000 sqft","uc":100,"tax":true},
+  {"name":"Fertilizing","unit":"application","uc":85,"tax":true},
+  {"name":"Mulch Installation (with barrier)","unit":"yard","uc":125,"tax":true},
+  {"name":"Mulch Only (spread)","unit":"yard","uc":85,"tax":true},
+  {"name":"Flower Bed Clean-Up & Prep","unit":"job","uc":120,"tax":true},
+  {"name":"New Flower Bed Install","unit":"job","uc":600,"tax":true},
+  {"name":"Rock Installation (decorative)","unit":"ton","uc":200,"tax":true},
+  {"name":"Hedge Trimming","unit":"10 ft","uc":75,"tax":true},
+  {"name":"Small Tree Trimming (<12 ft)","unit":"tree","uc":175,"tax":true},
+  {"name":"Tree/Brush Removal","unit":"job","uc":350,"tax":true},
+  {"name":"Spring/Fall Yard Cleanup","unit":"job","uc":450,"tax":true},
+  {"name":"Gutter Cleaning (1-story)","unit":"job","uc":135,"tax":true},
+  {"name":"Pressure Washing","unit":"sqft","uc":0.5,"tax":true},
+  {"name":"Landscape Design Plan (basic)","unit":"job","uc":175,"tax":true},
+  {"name":"Weed Barrier Replacement","unit":"sqft","uc":1.25,"tax":true},
+  {"name":"Planting (flowers/perennials)","unit":"plant","uc":14,"tax":true},
+  {"name":"Haul-Off/Debris Disposal","unit":"load","uc":95,"tax":false}
+];
+function loadCatalog(){ try{ return JSON.parse(localStorage.getItem('srq_catalog')) || DEFAULT_CATALOG; }catch(e){ return DEFAULT_CATALOG; } }
+function saveCatalog(c){ localStorage.setItem('srq_catalog', JSON.stringify(c)); }
+function renderCatalog(){ 
+  const cat = loadCatalog();
+  const grid = $('#catalog'); grid.innerHTML='';
+  cat.forEach((item, idx)=>{
+    const d=document.createElement('button'); d.className='ghost';
+    d.textContent = `${item.name} — ${money(item.uc)}/${item.unit}`;
+    d.style.textAlign='left'; d.style.padding='10px';
+    d.onclick = ()=> addFromCatalog(idx);
+    grid.appendChild(d);
+  });
+  $('#catalogJson').value = JSON.stringify(cat, null, 2);
+}
+function addFromCatalog(idx){
+  const item = loadCatalog()[idx];
+  const blended = +$('#blended').value || 55;
+  addLine({
+    desc: item.name,
+    unit: item.unit,
+    qty: (item.unit==='hr'?1:0),
+    uc: item.uc || 0,
+    hrs: item.hrs || 0,
+    rate: item.rateFromBlended ? blended : (+$('#blended').value||55),
+    eq: 0,
+    tax: (item.tax!==false)
+  });
+}
+$('#saveCatalog').onclick=()=>{ try{ saveCatalog(JSON.parse($('#catalogJson').value)); renderCatalog(); alert('Catalog saved.'); }catch(e){ alert('Invalid JSON'); } };
+$('#resetCatalog').onclick=()=>{ saveCatalog(DEFAULT_CATALOG); renderCatalog(); };
+
+// Photos & annotations
+const toDataURL=f=> new Promise(res=>{const r=new FileReader(); r.onload=e=>res(e.target.result); r.readAsDataURL(f);});
+$('#photos').addEventListener('change', async (e)=>{ const box=$('#thumbs'); for(const f of e.target.files){ const src=await toDataURL(f); const img=new Image(); img.src=src; img.style.height='70px'; img.style.border='1px solid #e5e7eb'; img.style.borderRadius='8px'; box.appendChild(img); } });
+// Simple annotator
+const canvas=document.getElementById('annotator'); const ctx=canvas.getContext('2d'); let drawing=false; ctx.lineWidth=3; ctx.strokeStyle='#ef4444';
+canvas.addEventListener('mousedown', e=>{ drawing=true; ctx.beginPath(); ctx.moveTo(e.offsetX,e.offsetY); });
+canvas.addEventListener('mousemove', e=>{ if(!drawing)return; ctx.lineTo(e.offsetX,e.offsetY); ctx.stroke(); });
+canvas.addEventListener('mouseup', ()=> drawing=false);
+document.getElementById('annoClear').onclick=()=> ctx.clearRect(0,0,canvas.width,canvas.height);
+document.getElementById('annoUse').onclick=()=>{ const img=new Image(); img.src=canvas.toDataURL(); img.style.height='70px'; img.style.border='1px solid #e5e7eb'; img.style.borderRadius='8px'; $('#thumbs').appendChild(img); };
+
+// Voice to text (if available)
+document.getElementById('startDictate').onclick=()=>{
+  const n=window; const SR = n.SpeechRecognition || n.webkitSpeechRecognition;
+  if(!SR){ alert('Speech recognition not supported on this device.'); return; }
+  const rec = new SR(); rec.lang='en-US'; rec.interimResults=false; rec.onresult=(e)=>{ const t=[...e.results].map(r=>r[0].transcript).join(' '); $('#notes').value = ($('#notes').value+' '+t).trim(); }; rec.start();
+};
+
+// Option select + QR (pseudo-QR so it works offline; good enough to scan if high-contrast)
+let selectedOption='Target';
+function chooseOption(name){ selectedOption=name; alert('Selected: '+name); }
+function drawQR(text, canvasId){ 
+  const c=document.getElementById(canvasId); const x=c.getContext('2d'); x.clearRect(0,0,c.width,c.height);
+  x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.fillStyle='#000';
+  let h=0; for(let i=0;i<text.length;i++) h=(h*31 + text.charCodeAt(i))>>>0;
+  const n=29, s=Math.floor(c.width/n);
+  for(let r=0;r<n;r++) for(let col=0;col<n;col++){ const bit=((h>>((r+col)%24))&1) ^ ((r*col)%3==0?1:0); if(bit) x.fillRect(col*s,r*s,s-1,s-1); }
+}
+document.getElementById('makeQR').onclick=()=>{ const url=$('#payUrl').value.trim(); if(!url){ alert('Enter a Payment URL first.'); return; } drawQR(url,'qrCanvas'); drawQR(url,'pQR'); };
+
+// Proposal toggle
+$('#toggleProposal').onclick=()=>{
+  calc();
+  $('#pClient').textContent=$('#client').value; $('#pAddr').textContent=$('#address').value;
+  $('#pJob').textContent=$('#jobName').value; $('#pDate').textContent=$('#jobDate').value || new Date().toISOString().slice(0,10);
+  $('#pContact').textContent = `${$('#website').value} • ${$('#phone').value} • ${$('#email').value}`;
+  $('#pOption').textContent = selectedOption;
+  $('#pPhotos').innerHTML=''; $('#thumbs').querySelectorAll('img').forEach(img=>{ const c=new Image(); c.src=img.src; c.style.width='100%'; c.style.border='1px solid #e5e7eb'; c.style.borderRadius='8px'; $('#pPhotos').appendChild(c); });
+  const p=$('#proposal'); p.style.display = (p.style.display==='block'?'none':'block'); scrollTo(0,0);
+};
+
+// Signature
+const pad=document.getElementById('sigPad'); const sctx=pad.getContext('2d'); let sd=false; sctx.lineWidth=2; sctx.strokeStyle='#111';
+function spos(e){const r=pad.getBoundingClientRect();const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;const y=(e.touches?e.touches[0].clientY:e.clientY)-r.top;return {x,y};}
+function sstart(e){sd=true;const p=spos(e);sctx.beginPath();sctx.moveTo(p.x,p.y);e.preventDefault();}
+function smove(e){if(!sd)return;const p=spos(e);sctx.lineTo(p.x,p.y);sctx.stroke();e.preventDefault();}
+function send(){sd=false;}
+pad.addEventListener('mousedown', sstart); pad.addEventListener('mousemove', smove); pad.addEventListener('mouseup', send); pad.addEventListener('mouseleave', send);
+pad.addEventListener('touchstart', sstart, {passive:false}); pad.addEventListener('touchmove', smove, {passive:false}); pad.addEventListener('touchend', send);
+document.getElementById('clearSig').onclick=()=> sctx.clearRect(0,0,pad.width,pad.height);
+
+// Boot
+function boot(){
+  addLine(); addLine(); setPlanDiscount(); updateCalcs(); calc(); renderCatalog();
+  $('#colorDot').style.background=getComputedStyle(document.documentElement).getPropertyValue('--b');
+}
+boot();
+</script>
+</body></html>
